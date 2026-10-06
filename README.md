@@ -2,7 +2,7 @@
 
 An AI-powered document question-answering chatbot built using **Retrieval-Augmented Generation (RAG)**.
 
-The system allows users to upload **PDF, DOCX, and TXT documents** and ask questions in natural language. The application retrieves relevant information from the uploaded documents and uses that information as context to generate grounded answers.
+The system allows users to upload **PDF, DOCX, and TXT documents** and ask questions in natural language. Instead of relying only on a language model's general knowledge, the application retrieves relevant information from the uploaded documents and uses it as context to generate grounded answers.
 
 ---
 
@@ -23,60 +23,84 @@ The system allows users to upload **PDF, DOCX, and TXT documents** and ask quest
 - 🗑️ Clear chat functionality
 - 🗑️ Clear knowledge base functionality
 - 🎨 Streamlit web interface
+- ⚠️ Error handling
 - 🔐 Environment-variable support for secrets
 
 ---
 
-## 🧠 How It Works
+## 🎯 Project Objective
 
-The application follows a Retrieval-Augmented Generation pipeline:
+The objective of this project is to build a practical **document-grounded AI assistant** that can answer questions from user-provided documents.
+
+The system uses Retrieval-Augmented Generation to retrieve relevant information from documents before generating an answer. This helps reduce unsupported or hallucinated responses and allows users to verify answers using source and page references.
+
+---
+
+## 🧠 What is RAG?
+
+**Retrieval-Augmented Generation (RAG)** is a technique that combines information retrieval with language generation.
+
+Instead of asking a language model to answer a question only from its pre-trained knowledge, the system:
+
+1. Processes the user's documents.
+2. Converts document content into embeddings.
+3. Stores the embeddings in a vector database.
+4. Retrieves relevant document chunks when a question is asked.
+5. Passes the retrieved information to the language model.
+6. Generates an answer based on the retrieved context.
+
+This makes the chatbot more suitable for answering questions about private or user-provided documents.
+
+---
+
+## 🔄 RAG Pipeline
+
+The application follows this pipeline:
 
 ```text
-                    User
-                     │
-                     ▼
-             Upload Documents
-                     │
-                     ▼
-          Document Processing
-                     │
-          ┌──────────┴──────────┐
-          │                     │
-       PDF/DOCX/TXT        Scanned PDF
-          │                     │
-          │                     ▼
-          │                    OCR
-          │                     │
-          └──────────┬──────────┘
-                     │
-                     ▼
-              Text Chunking
-            500 chars / 100 overlap
-                     │
-                     ▼
-          Sentence Transformer
-              Embeddings
-                     │
-                     ▼
-                 ChromaDB
-           Vector Knowledge Base
-                     │
-                     ▼
-              User Question
-                     │
-                     ▼
-          Question Embedding
-                     │
-                     ▼
-          Relevant Chunks
-             Retrieved
-                     │
-                     ▼
-       DeepSeek-R1 + Retrieved
-               Context
-                     │
-                     ▼
-              Final Answer
-                     │
-                     ▼
-             Sources / Pages
+Documents
+    │
+    ▼
+Document Processing
+    │
+    ├── PDF
+    ├── DOCX
+    ├── TXT
+    └── OCR for Scanned PDFs
+    │
+    ▼
+Text Chunking
+    │
+    ▼
+Sentence Transformer
+Embeddings
+    │
+    ▼
+ChromaDB
+Vector Database
+    │
+    │
+    ▼
+User Question
+    │
+    ▼
+Question Embedding
+    │
+    ▼
+Relevant Chunk Retrieval
+    │
+    ▼
+Context + User Question
+    │
+    ▼
+DeepSeek-R1
+via Ollama
+    │
+    ▼
+Grounded Answer
+    │
+    ▼
+Source + Page Reference
+    │
+    ▼
+Streamlit UI
